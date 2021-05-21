@@ -16,7 +16,7 @@ import {
     Button,
 } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
-import { Visibility, Edit, AddBox } from "@material-ui/icons";
+import { Visibility, Edit, AddBox, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import ContextService from "../services/context.service";
 import LineItemsService from "../services/lineItems.service";
@@ -59,6 +59,7 @@ class ContextPage extends React.Component {
             addLineItemModal: false,
             addLineItemModalInputTitle: '',
             addLineItemModalInputDescription: '',
+            deleteLineItemModal: false,
         }
     }
 
@@ -82,12 +83,16 @@ class ContextPage extends React.Component {
             {
                 field: "",
                 headerName: "Ações",
+                width: 150,
                 disableClickEventBubbling: true,
                 renderCell: (params) => {
                     const { row } = params;
-                    return <Button onClick={() => this.toggleModalEditLineItem(row)}>
-                        <Edit />
-                    </Button>
+                    return (
+                        <>
+                            <Button onClick={() => this.toggleModalEditLineItem(row)}><Edit /></Button>
+                            <Button onClick={() => this.toggleModalDeleteLineItem(row)}><Delete /></Button>
+                        </>
+                    );
                 }
             },
         ];
@@ -202,7 +207,6 @@ class ContextPage extends React.Component {
                         onChange={this.onChangeModalField}
                     />
                     <TextField
-                        autoFocus
                         margin="dense"
                         id="lineItemModalInputDescription"
                         label="Descrição"
@@ -293,6 +297,54 @@ class ContextPage extends React.Component {
         );
     }
 
+    toggleModalDeleteLineItem = (selectedLineItem) => {
+        const { deleteLineItemModal } = this.state;
+
+        if (deleteLineItemModal) {
+            this.setState({
+                deleteLineItemModal: !deleteLineItemModal,
+            });
+        } else {
+            this.setState({
+                deleteLineItemModal: !deleteLineItemModal,
+                selectedLineItem: selectedLineItem,
+            });
+        }
+    }
+
+    updateModalDeleteLineItemFields = async () => {
+        const { selectedLineItem: { id } } = this.state;
+
+        const lineItemMsg = await LineItemsService.deleteById(id);
+        this.toggleModalDeleteLineItem();
+        this.loadContextData();
+        alert(lineItemMsg);
+    }
+
+    renderModalDeleteLineItem = () => {
+        const { deleteLineItemModal, selectedLineItem } = this.state;
+        const { title } = selectedLineItem;
+
+        return (
+            <Dialog
+                open={deleteLineItemModal}
+                onClose={this.toggleModalDeleteLineItem}
+                aria-labelledby="delete-context-modal"
+                aria-describedby="delete-context-modal"
+            >
+                <DialogTitle id="delete-context-modal-title">Tem certeza que deseja remover: { title }?</DialogTitle>
+                <DialogActions>
+                    <Button onClick={this.toggleModalDeleteLineItem} color="primary">
+                        Cancelar
+                    </Button>
+                    <Button onClick={this.updateModalDeleteLineItemFields} color="primary" autoFocus>
+                        Deletar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        )
+    }
+
     renderTabsData = () => {
         const { context, tabSelected } = this.state;
         const { name, type, users } = context;
@@ -331,14 +383,14 @@ class ContextPage extends React.Component {
 
         return (
             <Container>
-                <Typography variant="h2">
-                    Context
-                </Typography>
+                <Typography variant="h2">Contexto</Typography>
 
                 { this.renderTabsData() }
                 { this.renderLineItems() }
+
                 { this.renderModalAddLineItem() }
                 { this.renderModalEditLineItem() }
+                { this.renderModalDeleteLineItem() }
             </Container>
         );
     }

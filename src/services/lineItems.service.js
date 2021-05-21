@@ -24,6 +24,13 @@ class LineItemsService {
         if (msg) return msg;
         return false;
     }
+
+    static async deleteById(id) {
+        const result = await axios.delete(`${configs.api.server}/lineitem/${id}`);
+        const msg = requestUtils.checkAndGetRequestMsg(result);
+        if (msg) return msg;
+        return false;
+    }
 }
 
 export default LineItemsService;

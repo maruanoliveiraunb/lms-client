@@ -18,6 +18,27 @@ class ContextService {
         if (data) return data;
         return false;
     }
+
+    static async insert(data) {
+        const result = await axios.post(`${configs.api.server}/context`, data);
+        const msg = requestUtils.checkAndGetRequestMsg(result);
+        if (msg) return msg;
+        return false;
+    }
+
+    static async update(data) {
+        const result = await axios.post(`${configs.api.server}/context/update`, data);
+        const msg = requestUtils.checkAndGetRequestMsg(result);
+        if (msg) return msg;
+        return false;
+    }
+
+    static async deleteById(id) {
+        const result = await axios.delete(`${configs.api.server}/context/${id}`);
+        const msg = requestUtils.checkAndGetRequestMsg(result);
+        if (msg) return msg;
+        return false;
+    }
 }
 
 export default ContextService;
