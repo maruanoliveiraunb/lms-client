@@ -10,6 +10,7 @@ import UserPage from "./pages/user.page";
 import ContextsPage from "./pages/contexts.page";
 import ContextPage from "./pages/context.page";
 import LineItemPage from "./pages/lineItem.page";
+import LoginPage from "./pages/login.page";
 
 export default function App() {
     return (
@@ -19,6 +20,9 @@ export default function App() {
                     <ul>
                         <li>
                             <Link to="/">Home</Link>
+                        </li>
+                        <li>
+                            <Link to="/login">Login</Link>
                         </li>
                         <li>
                             <Link to="/contexts">Contexts</Link>
@@ -36,6 +40,7 @@ export default function App() {
                     <Route path="/context/:id" exact={true} component={ContextPage} />
                     <Route path="/contexts" component={ContextsPage} />
                     <Route path="/users" component={UserPage} />
+                    <Route path="/login" component={LoginPage} />
                     <Route path="/" component={Home} />
                 </Switch>
             </div>
