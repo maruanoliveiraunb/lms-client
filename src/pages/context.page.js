@@ -83,12 +83,13 @@ class ContextPage extends React.Component {
             {
                 field: "",
                 headerName: "Ações",
-                width: 150,
+                width: 230,
                 disableClickEventBubbling: true,
                 renderCell: (params) => {
-                    const { row } = params;
+                    const { id, row } = params;
                     return (
                         <>
+                            <Button component={ Link } to={`/lineitem/${id}`}><Visibility /></Button>
                             <Button onClick={() => this.toggleModalEditLineItem(row)}><Edit /></Button>
                             <Button onClick={() => this.toggleModalDeleteLineItem(row)}><Delete /></Button>
                         </>

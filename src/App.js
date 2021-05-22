@@ -9,6 +9,7 @@ import 'fontsource-roboto';
 import UserPage from "./pages/user.page";
 import ContextsPage from "./pages/contexts.page";
 import ContextPage from "./pages/context.page";
+import LineItemPage from "./pages/lineItem.page";
 
 export default function App() {
     return (
@@ -31,20 +32,11 @@ export default function App() {
                 {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
                 <Switch>
-                    {/*<Route path="/context">*/}
-                    {/*    <Route path="/:id" component={ContextPage}/>*/}
-                    {/*</Route>*/}
-
+                    <Route path="/lineitem/:id" exact={true} component={LineItemPage} />
                     <Route path="/context/:id" exact={true} component={ContextPage} />
-                    <Route path="/contexts">
-                        <ContextsPage />
-                    </Route>
-                    <Route path="/users">
-                        <UserPage />
-                    </Route>
-                    <Route path="/">
-                        <Home />
-                    </Route>
+                    <Route path="/contexts" component={ContextsPage} />
+                    <Route path="/users" component={UserPage} />
+                    <Route path="/" component={Home} />
                 </Switch>
             </div>
         </Router>
@@ -55,6 +47,3 @@ function Home() {
     return <h2>Home</h2>;
 }
 
-function About() {
-    return <h2>About</h2>;
-}
