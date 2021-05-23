@@ -14,12 +14,14 @@ import {
 import { Visibility, Edit, AddBox, Delete } from '@material-ui/icons';
 import { Link } from "react-router-dom";
 import ContextService from "../services/context.service";
+import RolesUtils from "../utils/roles.utils";
 
 class ContextsPage extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            isModerator: RolesUtils.hasModeratorRole(),
             rows: [],
             addContextModal: false,
             addContextModalInputName: '',
@@ -247,7 +249,7 @@ class ContextsPage extends React.Component {
     }
 
     render() {
-        const { rows } = this.state;
+        const { rows, isModerator } = this.state;
 
         const columns = [
             { field: 'name', headerName: 'Nome', width: 230 },
@@ -264,11 +266,11 @@ class ContextsPage extends React.Component {
                     return (
                         <>
                             <Button component={ Link } to={`/context/${id}`}><Visibility /></Button>
-                            <Button onClick={() => this.toggleModalEditContext(row)}><Edit /></Button>
-                            <Button onClick={() => this.toggleModalDeleteContext(row)}><Delete /></Button>
+                            { isModerator && <Button onClick={() => this.toggleModalEditContext(row)}><Edit /></Button> }
+                            { isModerator && <Button onClick={() => this.toggleModalDeleteContext(row)}><Delete /></Button> }
                         </>
                     )
-                }
+                },
             },
         ];
 
@@ -278,11 +280,14 @@ class ContextsPage extends React.Component {
                     <Grid item xs={6}>
                         <Typography variant="h2">Contextos</Typography>
                     </Grid>
-                    <Grid item xs={6}>
-                        <Button onClick={this.toggleModalAddContext}>
-                            <AddBox />
-                        </Button>
-                    </Grid>
+                    {
+                        isModerator &&
+                            <Grid item xs={6}>
+                                <Button onClick={this.toggleModalAddContext}>
+                                    <AddBox />
+                                </Button>
+                            </Grid>
+                    }
                 </Grid>
                 <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection />
                 { this.renderModalAddContext() }

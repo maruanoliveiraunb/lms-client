@@ -14,11 +14,7 @@ class ApiService {
         try {
             return await axiosInstance.get(url);
         } catch (error) {
-            if (error.response.status === 401 || error.response.status === 401) {
-                window.location.replace('/');
-            } else {
-                return error;
-            }
+            this.handleRequestError(error);
         }
     }
 
@@ -26,11 +22,7 @@ class ApiService {
         try {
             return await axiosInstance.post(url, data);
         } catch (error) {
-            if (error.response.status === 401 || error.response.status === 401) {
-                window.location.replace('/');
-            } else {
-                return error;
-            }
+            this.handleRequestError(error);
         }
     }
 
@@ -38,12 +30,18 @@ class ApiService {
         try {
             return await axiosInstance.delete(url);
         } catch (error) {
+            this.handleRequestError(error);
+        }
+    }
+
+    static handleRequestError(error) {
+        if (error.response) {
             if (error.response.status === 401 || error.response.status === 401) {
                 window.location.replace('/');
-            } else {
-                return error;
+                return true;
             }
         }
+        return error;
     }
 }
 

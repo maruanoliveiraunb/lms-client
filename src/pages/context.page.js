@@ -349,7 +349,7 @@ class ContextPage extends React.Component {
     renderTabsData = () => {
         const { context, tabSelected } = this.state;
         const { name, type, users } = context;
-
+        console.log('users', users);
         return (
             <Paper>
                 <Tabs value={tabSelected} onChange={this.handleTabChange} aria-label="simple tabs example">
@@ -368,12 +368,50 @@ class ContextPage extends React.Component {
                     <Grid container spacing={3}>
                         <Grid item xs={12}>
                             <ul>
-                                { users.map(item => (<li key={item.user._id}><Typography>{item.user.name}</Typography></li>)) }
+                                { users && users.map(item => (<li key={item.user._id}><Typography>{item.user.name} ({item.role})</Typography></li>)) }
                             </ul>
                         </Grid>
                     </Grid>
                 </TabPanel>
             </Paper>
+        )
+    }
+
+    subscribeContext = async () => {
+        const { id: contextId } = this.state;
+        const { userData: { id : userId } } = this.props;
+
+        const data = { contextId, userId };
+
+        console.log(data);
+        const userMsg = await ContextService.updateUsers(data);
+        this.loadContextData();
+        alert(userMsg);
+    }
+
+    isSubscribed = () => {
+        const { userData } = this.props;
+        const { context: { users } } = this.state;
+
+        const index = users.findIndex(item => item.user.id === userData.id);
+        return index !== -1;
+    }
+
+    renderHeaderPage() {
+        const isSubscribed = this.isSubscribed();
+
+        return (
+            <Grid container>
+                <Grid item xs={6}>
+                    <Typography variant="h2">Contexto</Typography>
+                </Grid>
+                {
+                    isSubscribed &&
+                        <Grid item xs={6}>
+                            <Button onClick={this.subscribeContext}>Inscrever-se</Button>
+                        </Grid>
+                }
+            </Grid>
         )
     }
 
@@ -384,7 +422,7 @@ class ContextPage extends React.Component {
 
         return (
             <Container>
-                <Typography variant="h2">Contexto</Typography>
+                { this.renderHeaderPage() }
 
                 { this.renderTabsData() }
                 { this.renderLineItems() }
