@@ -15,8 +15,6 @@ import LoginPage from "./pages/login.page";
 
 export default function App() {
 
-    const userData = StorageUtils.getUserData();
-
     return (
         <Router>
             <div>
@@ -41,7 +39,7 @@ export default function App() {
             renders the first one that matches the current URL. */}
                 <Switch>
                     <Route path="/lineitem/:id" exact={true} component={LineItemPage} />
-                    <Route path="/context/:id" exact={true} component={(props) => <ContextPage userData={userData} {...props} />} />
+                    <Route path="/context/:id" exact={true} component={ContextPage} />
                     <Route path="/contexts" component={ContextsPage} />
                     <Route path="/users" component={UserPage} />
                     <Route path="/login" component={LoginPage} />

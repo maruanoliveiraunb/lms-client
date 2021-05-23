@@ -20,6 +20,8 @@ import { Visibility, Edit, AddBox, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import ContextService from "../services/context.service";
 import LineItemsService from "../services/lineItems.service";
+import RolesUtils from "../utils/roles.utils";
+import StorageUtils from "../utils/storage.utils";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -73,9 +75,16 @@ class ContextPage extends React.Component {
         this.setState({ context });
     }
 
+    isContextInstructor = () => {
+        const { context } = this.state;
+        return RolesUtils.isContextInstructor(context);
+    }
+
     renderLineItemsTable = () => {
         const { context } = this.state;
         const { lineItems } = context;
+
+        const isContextInstructor = this.isContextInstructor();
 
         const columns = [
             { field: 'title', headerName: 'Título', width: 230 },
@@ -88,13 +97,20 @@ class ContextPage extends React.Component {
                 renderCell: (params) => {
                     const { id, row } = params;
                     return (
-                        <>
-                            <Button component={ Link } to={`/lineitem/${id}`}><Visibility /></Button>
-                            <Button onClick={() => this.toggleModalEditLineItem(row)}><Edit /></Button>
-                            <Button onClick={() => this.toggleModalDeleteLineItem(row)}><Delete /></Button>
-                        </>
+                        <div>
+                            <Button
+                                component={ Link }
+                                to={{
+                                    pathname: `/lineitem/${id}`,
+                                    context: context
+                                }}>
+                                    <Visibility />
+                            </Button>
+                            { isContextInstructor && <Button onClick={() => this.toggleModalEditLineItem(row)}><Edit /></Button> }
+                            { isContextInstructor && <Button onClick={() => this.toggleModalDeleteLineItem(row)}><Delete /></Button> }
+                        </div>
                     );
-                }
+                },
             },
         ];
 
@@ -115,6 +131,11 @@ class ContextPage extends React.Component {
     }
 
     renderLineItems = () => {
+        const isSubscribed = this.isSubscribed();
+
+        if (!isSubscribed) return null;
+
+        const isContextInstructor = this.isContextInstructor();
 
         return (
             <Grid style={{marginTop: 20, marginBottom: 20}} container spacing={3}>
@@ -125,11 +146,14 @@ class ContextPage extends React.Component {
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item xs={6}>
-                    <Button onClick={this.toggleModalAddLineItem}>
-                        <AddBox />
-                    </Button>
-                </Grid>
+                {
+                    isContextInstructor &&
+                        <Grid item xs={6}>
+                            <Button onClick={this.toggleModalAddLineItem}>
+                                <AddBox />
+                            </Button>
+                        </Grid>
+                }
                 <Grid item xs={12}>
                     { this.renderLineItemsTable() }
                 </Grid>
@@ -281,7 +305,6 @@ class ContextPage extends React.Component {
                         onChange={this.onChangeModalField}
                     />
                     <TextField
-                        autoFocus
                         margin="dense"
                         id="addLineItemModalInputDescription"
                         label="Descrição"
@@ -349,7 +372,7 @@ class ContextPage extends React.Component {
     renderTabsData = () => {
         const { context, tabSelected } = this.state;
         const { name, type, users } = context;
-        console.log('users', users);
+
         return (
             <Paper>
                 <Tabs value={tabSelected} onChange={this.handleTabChange} aria-label="simple tabs example">
@@ -379,21 +402,21 @@ class ContextPage extends React.Component {
 
     subscribeContext = async () => {
         const { id: contextId } = this.state;
-        const { userData: { id : userId } } = this.props;
+        const userData = StorageUtils.getUserData();
+        const { id: userId } = userData;
 
         const data = { contextId, userId };
 
-        console.log(data);
         const userMsg = await ContextService.updateUsers(data);
         this.loadContextData();
         alert(userMsg);
     }
 
     isSubscribed = () => {
-        const { userData } = this.props;
+        const userData = StorageUtils.getUserData();
         const { context: { users } } = this.state;
 
-        const index = users.findIndex(item => item.user.id === userData.id);
+        const index = users.findIndex(item => item.user._id === userData.id);
         return index !== -1;
     }
 
@@ -406,7 +429,7 @@ class ContextPage extends React.Component {
                     <Typography variant="h2">Contexto</Typography>
                 </Grid>
                 {
-                    isSubscribed &&
+                    !isSubscribed &&
                         <Grid item xs={6}>
                             <Button onClick={this.subscribeContext}>Inscrever-se</Button>
                         </Grid>

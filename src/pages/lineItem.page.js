@@ -21,6 +21,8 @@ import { Link } from "react-router-dom";
 import ContextService from "../services/context.service";
 import LineItemsService from "../services/lineItems.service";
 import AnswersService from "../services/answers.service";
+import RolesUtils from "../utils/roles.utils";
+import StorageUtils from "../utils/storage.utils";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -73,11 +75,41 @@ class LineItemPage extends React.Component {
         this.setState({ lineItem });
     }
 
+    isContextInstructor = () => {
+        const { location: { context } } = this.props;
+        return RolesUtils.isContextInstructor(context);
+    }
+
+    getCurrentLearnerAnswer = () => {
+        const { lineItem: { answers } } = this.state;
+        const userData = StorageUtils.getUserData();
+        return answers.find(answers => answers.learner._id === userData.id);
+    }
+
+    renderLearnerAnswer = () => {
+        const answer = this.getCurrentLearnerAnswer();
+        const { file, grade, feedback } = answer;
+
+        if (answer) {
+            return (
+                <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                        <Typography><b>Arquivo enviado:</b> { file }</Typography>
+                        <Typography><b>Nota:</b> { grade ? grade : 'Sem nota' }</Typography>
+                        <Typography><b>Feedback:</b> { feedback ? feedback : 'Sem feedback' }</Typography>
+                    </Grid>
+                </Grid>
+            )
+        }
+
+        return (
+            <Typography>Nenhuma resposta enviada</Typography>
+        );
+    }
+
     renderAnswersTable = () => {
         const { lineItem } = this.state;
         const { answers } = lineItem;
-
-        console.log('answers', answers);
 
         const columns = [
             { field: 'learner', headerName: 'Estudante', width: 230 },
@@ -88,11 +120,7 @@ class LineItemPage extends React.Component {
                 width: 150,
                 disableClickEventBubbling: true,
                 renderCell: (params) => {
-                    console.log('params', params)
                     const { row } = params;
-
-                    console.log(row);
-
                     return (
                         <>
                             <Button onClick={() => this.toggleModalEditAnswer(row)}><Edit /></Button>
@@ -122,6 +150,8 @@ class LineItemPage extends React.Component {
     }
 
     renderAnswers = () => {
+        const isContextInstructor = this.isContextInstructor();
+        const hasCurrentLearnerAnswer = this.getCurrentLearnerAnswer();
 
         return (
             <Grid style={{marginTop: 20, marginBottom: 20}} container spacing={3}>
@@ -132,14 +162,28 @@ class LineItemPage extends React.Component {
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item xs={6}>
-                    <Button onClick={this.toggleModalAddAnswer}>
-                        <AddBox />
-                    </Button>
-                </Grid>
-                <Grid item xs={12}>
-                    { this.renderAnswersTable() }
-                </Grid>
+                {
+                    !isContextInstructor &&
+                        <>
+                            {
+                                !hasCurrentLearnerAnswer &&
+                                    <Grid item xs={6}>
+                                        <Button onClick={this.toggleModalAddAnswer}>
+                                            <AddBox />
+                                        </Button>
+                                    </Grid>
+                            }
+                            <Grid item xs={12}>
+                                { this.renderLearnerAnswer() }
+                            </Grid>
+                        </>
+                }
+                {
+                    isContextInstructor &&
+                        <Grid item xs={12}>
+                            { this.renderAnswersTable() }
+                        </Grid>
+                }
             </Grid>
         )
     }
@@ -251,10 +295,12 @@ class LineItemPage extends React.Component {
             addAnswerModalInputFile,
         } = this.state;
 
+        const userData = StorageUtils.getUserData();
+
         const data = {
             lineItemId: id,
             file: addAnswerModalInputFile,
-            learner: '60a0a250b3f4c9ba0e32b7c1',
+            learner: userData.id,
         }
 
         const answerMsg = await AnswersService.insert(data);
