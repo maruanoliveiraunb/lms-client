@@ -14,14 +14,18 @@ import {
     DialogContentText,
     TextField,
     Button,
+    Select,
+    MenuItem,
 } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
 import { Visibility, Edit, AddBox, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
+import { Line } from 'react-chartjs-2';
 import ContextService from "../services/context.service";
 import LineItemsService from "../services/lineItems.service";
 import RolesUtils from "../utils/roles.utils";
 import StorageUtils from "../utils/storage.utils";
+import RolesConstants from "../constants/roles.constants";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -62,6 +66,7 @@ class ContextPage extends React.Component {
             addLineItemModalInputTitle: '',
             addLineItemModalInputDescription: '',
             deleteLineItemModal: false,
+            selectGradeHistoryInputUser: '',
         }
     }
 
@@ -72,6 +77,7 @@ class ContextPage extends React.Component {
     loadContextData = async () => {
         const { id } = this.state;
         const context = await ContextService.getById(id);
+        StorageUtils.setCurrentContextId(id);
         this.setState({ context });
     }
 
@@ -98,14 +104,7 @@ class ContextPage extends React.Component {
                     const { id, row } = params;
                     return (
                         <div>
-                            <Button
-                                component={ Link }
-                                to={{
-                                    pathname: `/lineitem/${id}`,
-                                    context: context
-                                }}>
-                                    <Visibility />
-                            </Button>
+                            <Button component={ Link } to={`/lineitem/${id}`}><Visibility /></Button>
                             { isContextInstructor && <Button onClick={() => this.toggleModalEditLineItem(row)}><Edit /></Button> }
                             { isContextInstructor && <Button onClick={() => this.toggleModalDeleteLineItem(row)}><Delete /></Button> }
                         </div>
@@ -158,6 +157,118 @@ class ContextPage extends React.Component {
                     { this.renderLineItemsTable() }
                 </Grid>
             </Grid>
+        )
+    }
+
+    onChangeGradeSelectField = (event) => {
+        const { target: { value } } = event;
+        this.setState({ selectGradeHistoryInputUser: value })
+    }
+
+    renderGradesHistory = () => {
+        const { context: { lineItems, users }, selectGradeHistoryInputUser } = this.state;
+
+        const isContextInstructor = this.isContextInstructor();
+        const userData = StorageUtils.getUserData();
+
+        const userToShowGradeHistory = isContextInstructor ? selectGradeHistoryInputUser : userData.id;
+
+        const labelsLineItemList = lineItems.map(lineItem => lineItem.title);
+        const usersSelectList = users.filter(user => user.role === RolesConstants.LEARNER);
+
+        const gradeDataList = lineItems.map(lineItem => {
+            const { answers } = lineItem;
+            const answer = answers.find(answer => answer.learner === userToShowGradeHistory);
+            if (answer && answer.grade) {
+                return answer.grade;
+            }
+            return 0;
+        });
+
+        const averageGradeList = gradeDataList.map((grade, index) => {
+            const tempGradeList = gradeDataList.filter((grade, tempIndex) => tempIndex <= index);
+            const sum = tempGradeList.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+            return sum / tempGradeList.length;
+        });
+
+        const data = {
+            labels: labelsLineItemList,
+            datasets: [
+                {
+                    label: 'Nota',
+                    data: gradeDataList,
+                    fill: false,
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgba(255, 99, 132, 0.2)',
+                    yAxisID: 'y-Axis-id',
+                },
+                {
+                    label: 'Mínimo',
+                    data: [5, 5, 5],
+                    fill: false,
+                    backgroundColor: 'rgb(0, 0, 0)',
+                    borderColor: 'rgba(0, 0, 0, 0.2)',
+                    yAxisID: 'y-Axis-id',
+                },
+                {
+                    label: 'Média',
+                    data: averageGradeList,
+                    fill: true,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 0.2)',
+                    yAxisID: 'y-Axis-id',
+                },
+            ],
+        };
+
+        const options = {
+            scales: {
+                yAxes: [
+                    {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        id: 'y-Axis-id',
+                        ticks: {
+                            min: 0,
+                            steps: 1,
+                            beginAtZero: true,
+                            max: 10,
+                        }
+                    }
+                ]
+            },
+        };
+
+        return (
+            <Grid container>
+                <Grid item xs={6}>
+                    <Typography style={{marginBottom: 10}} variant={"h6"}>
+                        <Box fontWeight="fontWeightMedium">
+                            HISTÓRICO DE NOTAS
+                        </Box>
+                    </Typography>
+                </Grid>
+                {
+                    isContextInstructor &&
+                        <Grid item xs={6}>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="selectGradeHistoryInputUser"
+                                value={selectGradeHistoryInputUser}
+                                onChange={this.onChangeGradeSelectField}
+                            >
+                                {
+                                    usersSelectList.map(item => <MenuItem value={item.user._id}>{item.user.name}</MenuItem>)
+                                }
+                            </Select>
+                        </Grid>
+                }
+                <Grid item xs={12}>
+                    <Line data={data} options={options} />
+                </Grid>
+            </Grid>
+
         )
     }
 
@@ -449,6 +560,7 @@ class ContextPage extends React.Component {
 
                 { this.renderTabsData() }
                 { this.renderLineItems() }
+                { this.renderGradesHistory() }
 
                 { this.renderModalAddLineItem() }
                 { this.renderModalEditLineItem() }

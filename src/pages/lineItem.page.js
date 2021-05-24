@@ -53,6 +53,7 @@ class LineItemPage extends React.Component {
 
         this.state = {
             id,
+            context: undefined,
             lineItem: undefined,
             tabSelected: 0,
             selectedAnswer: {},
@@ -72,11 +73,13 @@ class LineItemPage extends React.Component {
     loadLineItemData = async () => {
         const { id } = this.state;
         const lineItem = await LineItemsService.getById(id);
-        this.setState({ lineItem });
+        const contextId = StorageUtils.getCurrentContextId();
+        const context = await ContextService.getById(contextId);
+        this.setState({ lineItem, context });
     }
 
     isContextInstructor = () => {
-        const { location: { context } } = this.props;
+        const { context } = this.state;
         return RolesUtils.isContextInstructor(context);
     }
 
@@ -88,9 +91,10 @@ class LineItemPage extends React.Component {
 
     renderLearnerAnswer = () => {
         const answer = this.getCurrentLearnerAnswer();
-        const { file, grade, feedback } = answer;
 
         if (answer) {
+            const { file, grade, feedback } = answer;
+
             return (
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
