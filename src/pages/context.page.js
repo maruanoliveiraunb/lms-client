@@ -191,6 +191,8 @@ class ContextPage extends React.Component {
             return sum / tempGradeList.length;
         });
 
+        const minimumGradeList = labelsLineItemList.map(lineItem => 5);
+
         const data = {
             labels: labelsLineItemList,
             datasets: [
@@ -204,7 +206,7 @@ class ContextPage extends React.Component {
                 },
                 {
                     label: 'Mínimo',
-                    data: [5, 5, 5],
+                    data: minimumGradeList,
                     fill: false,
                     backgroundColor: 'rgb(0, 0, 0)',
                     borderColor: 'rgba(0, 0, 0, 0.2)',
