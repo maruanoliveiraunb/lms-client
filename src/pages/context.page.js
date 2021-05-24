@@ -520,7 +520,7 @@ class ContextPage extends React.Component {
         return (
             <Grid container>
                 <Grid item xs={6}>
-                    <Typography variant="h2">Contexto</Typography>
+                    <Typography variant="h2">Curso</Typography>
                 </Grid>
                 {
                     !isSubscribed &&

@@ -60,7 +60,7 @@ class RegisterPage extends React.Component {
                 <Grid item xs={12}>
                     <Typography variant={"h2"}>
                         <Box fontWeight="fontWeightMedium">
-                            LOGIN
+                            CADASTRAR
                         </Box>
                     </Typography>
                 </Grid>

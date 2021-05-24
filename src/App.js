@@ -3,7 +3,6 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link
 } from "react-router-dom";
 import 'fontsource-roboto';
 import UserPage from "./pages/user.page";
@@ -12,31 +11,15 @@ import ContextPage from "./pages/context.page";
 import LineItemPage from "./pages/lineItem.page";
 import LoginPage from "./pages/login.page";
 import RegisterPage from "./pages/register.page";
+import HomePage from "./pages/home.page";
+import MainMenu from "./components/mainMenu.component";
 
 export default function App() {
 
     return (
         <Router>
             <div>
-                <nav>
-                    <ul>
-                        <li>
-                            <Link to="/">Home</Link>
-                        </li>
-                        <li>
-                            <Link to="/register">Register</Link>
-                        </li>
-                        <li>
-                            <Link to="/login">Login</Link>
-                        </li>
-                        <li>
-                            <Link to="/contexts">Contexts</Link>
-                        </li>
-                        <li>
-                            <Link to="/users">Users</Link>
-                        </li>
-                    </ul>
-                </nav>
+                <MainMenu />
 
                 {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
@@ -47,14 +30,9 @@ export default function App() {
                     <Route path="/users" component={UserPage} />
                     <Route path="/login" component={LoginPage} />
                     <Route path="/register" component={RegisterPage} />
-                    <Route path="/" component={Home} />
+                    <Route path="/" component={HomePage} />
                 </Switch>
             </div>
         </Router>
     );
 }
-
-function Home() {
-    return <h2>Home</h2>;
-}
-

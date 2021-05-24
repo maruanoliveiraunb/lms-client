@@ -278,7 +278,7 @@ class ContextsPage extends React.Component {
             <Container style={{height: 400}}>
                 <Grid style={{marginTop: 20, marginBottom: 20}} container spacing={3}>
                     <Grid item xs={6}>
-                        <Typography variant="h2">Contextos</Typography>
+                        <Typography variant="h2">Cursos</Typography>
                     </Grid>
                     {
                         isModerator &&
