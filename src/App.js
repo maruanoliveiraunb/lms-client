@@ -6,12 +6,12 @@ import {
     Link
 } from "react-router-dom";
 import 'fontsource-roboto';
-import StorageUtils from "./utils/storage.utils";
 import UserPage from "./pages/user.page";
 import ContextsPage from "./pages/contexts.page";
 import ContextPage from "./pages/context.page";
 import LineItemPage from "./pages/lineItem.page";
 import LoginPage from "./pages/login.page";
+import RegisterPage from "./pages/register.page";
 
 export default function App() {
 
@@ -22,6 +22,9 @@ export default function App() {
                     <ul>
                         <li>
                             <Link to="/">Home</Link>
+                        </li>
+                        <li>
+                            <Link to="/register">Register</Link>
                         </li>
                         <li>
                             <Link to="/login">Login</Link>
@@ -43,6 +46,7 @@ export default function App() {
                     <Route path="/contexts" component={ContextsPage} />
                     <Route path="/users" component={UserPage} />
                     <Route path="/login" component={LoginPage} />
+                    <Route path="/register" component={RegisterPage} />
                     <Route path="/" component={Home} />
                 </Switch>
             </div>

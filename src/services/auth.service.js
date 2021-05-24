@@ -9,6 +9,13 @@ class AuthService {
         if (auth) return auth;
         return false;
     }
+
+    static async signup(data) {
+        const result = await ApiService.post(`/auth/signup`, data);
+        const auth = requestUtils.checkAndGetRequestData(result);
+        if (auth) return auth;
+        return false;
+    }
 }
 
 export default AuthService;
