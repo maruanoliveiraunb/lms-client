@@ -39,6 +39,13 @@ class ContextService {
         return false;
     }
 
+    static async updateInstructorUsers(data) {
+        const result = await ApiService.post(`/context/update/instructor`, data);
+        const msg = requestUtils.checkAndGetRequestMsg(result);
+        if (msg) return msg;
+        return false;
+    }
+
     static async deleteById(id) {
         const result = await ApiService.delete(`/context/${id}`);
         const msg = requestUtils.checkAndGetRequestMsg(result);

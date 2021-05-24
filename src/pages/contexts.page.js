@@ -25,11 +25,9 @@ class ContextsPage extends React.Component {
             rows: [],
             addContextModal: false,
             addContextModalInputName: '',
-            addContextModalInputType: '',
             selectedContext: {},
             editContextModal: false,
             editContextModalInputName: '',
-            editContextModalInputType: '',
             deleteContextModal: false,
         }
     }
@@ -55,7 +53,6 @@ class ContextsPage extends React.Component {
             this.setState({
                 addContextModal: !addContextModal,
                 addContextModalInputName: '',
-                addContextModalInputType: '',
             });
         } else {
             this.setState({
@@ -67,12 +64,11 @@ class ContextsPage extends React.Component {
     insertModalAddContextFields = async () => {
         const {
             addContextModalInputName,
-            addContextModalInputType,
         } = this.state;
 
         const data = {
             name: addContextModalInputName,
-            type: addContextModalInputType,
+            type: 'COURSE',
         };
 
         const contextMsg = await ContextService.insert(data);
@@ -82,7 +78,7 @@ class ContextsPage extends React.Component {
     }
 
     renderModalAddContext = () => {
-        const { addContextModal, addContextModalInputName, addContextModalInputType } = this.state;
+        const { addContextModal, addContextModalInputName } = this.state;
 
         return (
             <Dialog open={ addContextModal } onClose={this.toggleModalAddLineItem} aria-labelledby="form-dialog-title">
@@ -102,14 +98,6 @@ class ContextsPage extends React.Component {
                         value={ addContextModalInputName }
                         onChange={this.onChangeModalField}
                     />
-                    <TextField
-                        margin="dense"
-                        id="addContextModalInputType"
-                        label="Tipo"
-                        fullWidth
-                        value={ addContextModalInputType }
-                        onChange={this.onChangeModalField}
-                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.toggleModalAddContext}>Cancelar</Button>
@@ -127,12 +115,11 @@ class ContextsPage extends React.Component {
                 editContextModal: !editContextModal,
             });
         } else {
-            const { name, type } = selectedContext;
+            const { name } = selectedContext;
             this.setState({
                 editContextModal: !editContextModal,
                 selectedContext: selectedContext,
                 editContextModalInputName: name,
-                editContextModalInputType: type,
             });
         }
     }
@@ -140,18 +127,15 @@ class ContextsPage extends React.Component {
     updateModalEditContextFields = async () => {
         const {
             editContextModalInputName,
-            editContextModalInputType,
             selectedContext
         } = this.state;
 
         const { id } = selectedContext;
 
-        console.log('selectedContexto', selectedContext);
-
         const data = {
             id,
             name: editContextModalInputName,
-            type: editContextModalInputType,
+            type: 'COURSE',
         };
 
         const contextMsg = await ContextService.update(data);
@@ -161,7 +145,7 @@ class ContextsPage extends React.Component {
     }
 
     renderModalEditContext = () => {
-        const { editContextModal, editContextModalInputName, editContextModalInputType, selectedContext } = this.state;
+        const { editContextModal, editContextModalInputName, selectedContext } = this.state;
         const { name } = selectedContext;
 
         return (
@@ -182,14 +166,6 @@ class ContextsPage extends React.Component {
                         value={ editContextModalInputName }
                         onChange={this.onChangeModalField}
                     />
-                    <TextField
-                        margin="dense"
-                        id="editContextModalInputType"
-                        label="Tipo"
-                        fullWidth
-                        value={ editContextModalInputType }
-                        onChange={this.onChangeModalField}
-                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.toggleModalEditContext}>Cancelar</Button>
@@ -207,7 +183,6 @@ class ContextsPage extends React.Component {
                 deleteContextModal: !deleteContextModal,
             });
         } else {
-            const { name, type } = selectedContext;
             this.setState({
                 deleteContextModal: !deleteContextModal,
                 selectedContext: selectedContext,

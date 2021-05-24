@@ -147,6 +147,10 @@ class ContextPage extends React.Component {
     }
 
     renderGradesHistory = () => {
+        const isSubscribed = this.isSubscribed();
+
+        if (!isSubscribed) return null;
+
         const { context: { lineItems, users }, selectGradeHistoryInputUser } = this.state;
 
         const isContextInstructor = this.isContextInstructor();
@@ -224,7 +228,7 @@ class ContextPage extends React.Component {
         };
 
         return (
-            <Grid container>
+            <Grid container style={{marginTop: 30}}>
                 <Grid item xs={6}>
                     <Typography style={{marginBottom: 10}} variant={"h6"}>
                         <Box fontWeight="fontWeightMedium">
@@ -501,9 +505,16 @@ class ContextPage extends React.Component {
 
         const data = { contextId, userId };
 
-        const userMsg = await ContextService.updateUsers(data);
+        const hasInstructorPermission = RolesUtils.hasModeratorRole();
+
+        if (hasInstructorPermission) {
+            const userMsg = await ContextService.updateInstructorUsers(data);
+            alert(userMsg);
+        } else {
+            const userMsg = await ContextService.updateUsers(data);
+            alert(userMsg);
+        }
         this.loadContextData();
-        alert(userMsg);
     }
 
     isSubscribed = () => {
