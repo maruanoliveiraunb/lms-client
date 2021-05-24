@@ -111,6 +111,10 @@ class LineItemPage extends React.Component {
         );
     }
 
+    openAnswerFile = (url) => {
+        window.open(url, '_blank');
+    }
+
     renderAnswersTable = () => {
         const { lineItem } = this.state;
         const { answers } = lineItem;
@@ -118,6 +122,17 @@ class LineItemPage extends React.Component {
         const columns = [
             { field: 'learner', headerName: 'Estudante', width: 230 },
             { field: 'grade', headerName: 'Nota', width: 100 },
+            { field: 'feedback', headerName: 'Feedback', width: 150 },
+            {
+                field: "file",
+                headerName: "Arquivo",
+                width: 150,
+                disableClickEventBubbling: true,
+                renderCell: (params) => {
+                    const { formattedValue } = params;
+                    return <Button onClick={() => this.openAnswerFile(formattedValue)}><Visibility /></Button>;
+                }
+            },
             {
                 field: "",
                 headerName: "Ações",
