@@ -21,31 +21,12 @@ import { DataGrid } from "@material-ui/data-grid";
 import { Visibility, Edit, AddBox, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import { Line } from 'react-chartjs-2';
+import TabPanel from "../components/tabpanel.component";
 import ContextService from "../services/context.service";
 import LineItemsService from "../services/lineItems.service";
 import RolesUtils from "../utils/roles.utils";
 import StorageUtils from "../utils/storage.utils";
 import RolesConstants from "../constants/roles.constants";
-
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box p={3}>
-                    <Typography>{children}</Typography>
-                </Box>
-            )}
-        </div>
-    );
-}
 
 class ContextPage extends React.Component {
 

@@ -16,33 +16,13 @@ import {
     Button,
 } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
-import { Visibility, Edit, AddBox, Delete } from "@material-ui/icons";
-import { Link } from "react-router-dom";
+import { Visibility, Edit, AddBox } from "@material-ui/icons";
+import TabPanel from "../components/tabpanel.component";
 import ContextService from "../services/context.service";
 import LineItemsService from "../services/lineItems.service";
 import AnswersService from "../services/answers.service";
 import RolesUtils from "../utils/roles.utils";
 import StorageUtils from "../utils/storage.utils";
-
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box p={3}>
-                    <Typography>{children}</Typography>
-                </Box>
-            )}
-        </div>
-    );
-}
 
 class LineItemPage extends React.Component {
 
@@ -406,36 +386,26 @@ class LineItemPage extends React.Component {
         )
     }
 
-    // renderTabsData = () => {
-    //     const { context, tabSelected } = this.state;
-    //     const { name, type, users } = context;
-    //
-    //     return (
-    //         <Paper>
-    //             <Tabs value={tabSelected} onChange={this.handleTabChange} aria-label="simple tabs example">
-    //                 <Tab label="DADOS" />
-    //                 <Tab label="USUÁRIOS" />
-    //             </Tabs>
-    //             <TabPanel value={tabSelected} index={0}>
-    //                 <Grid spacing={3}>
-    //                     <Grid item xs={12}>
-    //                         <Typography>Nome: { name }</Typography>
-    //                         <Typography>Tipo: { type }</Typography>
-    //                     </Grid>
-    //                 </Grid>
-    //             </TabPanel>
-    //             <TabPanel value={tabSelected} index={1}>
-    //                 <Grid container spacing={3}>
-    //                     <Grid item xs={12}>
-    //                         <ul>
-    //                             { users.map(item => (<li key={item.user._id}><Typography>{item.user.name}</Typography></li>)) }
-    //                         </ul>
-    //                     </Grid>
-    //                 </Grid>
-    //             </TabPanel>
-    //         </Paper>
-    //     )
-    // }
+    renderTabsData = () => {
+        const { lineItem, tabSelected } = this.state;
+        const { title, description } = lineItem;
+
+        return (
+            <Paper>
+                <Tabs value={tabSelected} onChange={this.handleTabChange} aria-label="simple tabs example">
+                    <Tab label="DADOS" />
+                </Tabs>
+                <TabPanel value={tabSelected} index={0}>
+                    <Grid spacing={3}>
+                        <Grid item xs={12}>
+                            <Typography>Título: { title }</Typography>
+                            <Typography>Descrição: { description }</Typography>
+                        </Grid>
+                    </Grid>
+                </TabPanel>
+            </Paper>
+        )
+    }
 
     render() {
         const { lineItem } = this.state;
@@ -446,7 +416,7 @@ class LineItemPage extends React.Component {
             <Container>
                 <Typography variant="h2">Atividade</Typography>
 
-                {/*{ this.renderTabsData() }*/}
+                { this.renderTabsData() }
                 { this.renderAnswers() }
 
                 { this.renderModalAddAnswer() }
