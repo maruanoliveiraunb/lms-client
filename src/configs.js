@@ -1,5 +1,5 @@
 export default {
     api: {
-        server: 'http://localhost:3002'
+        server: process.env.API_PATH || 'http://localhost:3002'
     }
 }
