@@ -40,7 +40,7 @@ class LineItemPage extends React.Component {
             selectedAnswer: {},
             answerModal: false,
             answerModalInputFeedback: '',
-            answerModalInputGrade: '',
+            answerModalInputGrade: 0,
             addAnswerModal: false,
             addAnswerModalInputFile: '',
             deleteLineItemModal: false,
@@ -246,16 +246,20 @@ class LineItemPage extends React.Component {
 
         const { id } = selectedAnswer;
 
-        const data = {
-            id,
-            feedback: answerModalInputFeedback,
-            grade: answerModalInputGrade,
-        }
+        if (isNaN(answerModalInputGrade) || answerModalInputGrade < 0 || answerModalInputGrade > 10) {
+            this.openAlert('Informe um valor de 0 a 10 para a nota', 'error');
+        } else {
+            const data = {
+                id,
+                feedback: answerModalInputFeedback,
+                grade: answerModalInputGrade,
+            }
 
-        const answerMsg = await AnswersService.update(data);
-        this.toggleModalEditAnswer(selectedAnswer);
-        this.loadLineItemData();
-        this.openAlert(answerMsg, 'success');
+            const answerMsg = await AnswersService.update(data);
+            this.toggleModalEditAnswer(selectedAnswer);
+            this.loadLineItemData();
+            this.openAlert(answerMsg, 'success');
+        }
     }
 
     renderModalEditAnswer = () => {
