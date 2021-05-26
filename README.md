@@ -1,25 +1,23 @@
-# Create React App example
+# LMS client
 
-## How to use
+## Como usar
 
-Download the example [or clone the repo](https://github.com/mui-org/material-ui):
+### Em modo de desenvolvimento:
 
-```sh
-curl https://codeload.github.com/mui-org/material-ui/tar.gz/master | tar -xz --strip=2 material-ui-master/examples/create-react-app
-cd create-react-app
-```
-
-Install it and run:
-
+1) Altere o endereço do servidor no arquivo `configs.js`
+2) Execute os comandos abaixo:
 ```sh
 npm install
 npm start
 ```
+3) Acesse `http://localhost:3000` no seu navegador
 
-or:
 
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/mui-org/material-ui/tree/master/examples/create-react-app)
-
-## The idea behind the example
-
-This example demonstrates how you can use [Create React App](https://github.com/facebookincubator/create-react-app).
+### Em produção:
+1) Altere o endereço do servidor no arquivo `configs.js`
+2) Execute os comandos abaixo:
+```sh
+npm install
+npm build
+```
+3) Copie o conteúdo da pasta `/build` para o seu servidor
