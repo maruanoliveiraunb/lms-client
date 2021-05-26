@@ -11,6 +11,7 @@ import ContextPage from "./pages/context.page";
 import LineItemPage from "./pages/lineItem.page";
 import LoginPage from "./pages/login.page";
 import RegisterPage from "./pages/register.page";
+import RegisterModeratorPage from "./pages/registerModerator.page";
 import HomePage from "./pages/home.page";
 import MainMenu from "./components/mainMenu.component";
 
@@ -30,6 +31,7 @@ export default function App() {
                     <Route path="/users" component={UserPage} />
                     <Route path="/login" component={LoginPage} />
                     <Route path="/register" component={RegisterPage} />
+                    <Route path="/register-moderator" component={RegisterModeratorPage} />
                     <Route path="/" component={HomePage} />
                 </Switch>
             </div>

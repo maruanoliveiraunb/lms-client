@@ -1,17 +1,19 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import {Box, Button, Container, Grid, TextField, Typography} from "@material-ui/core";
-import {AddBox} from "@material-ui/icons";
 import AuthService from "../services/auth.service";
 
-class LoginPage extends React.Component {
+class RegisterModeratorPage extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
+            fieldName: '',
             fieldUsername: '',
+            fieldEmail: '',
             fieldPassword: '',
+            roles: ["user", "moderator"],
         }
     }
 
@@ -20,15 +22,24 @@ class LoginPage extends React.Component {
         this.setState({[id]: value});
     }
 
-    submitLogin = async () => {
-        const { fieldUsername, fieldPassword } = this.state;
+    submitRegisterForm = async () => {
+        const {
+            fieldName,
+            fieldUsername,
+            fieldEmail,
+            fieldPassword,
+            roles,
+        } = this.state;
 
-        if (fieldUsername && fieldPassword) {
+        if (fieldName && fieldUsername && fieldEmail && fieldPassword && roles) {
             const data = {
+                name: fieldName,
                 username: fieldUsername,
+                email: fieldEmail,
                 password: fieldPassword,
+                roles: roles,
             }
-            const result = await AuthService.signin(data);
+            const result = await AuthService.signup(data);
             if (result) {
                 const { history } = this.props;
                 history.push("/home");
@@ -36,15 +47,20 @@ class LoginPage extends React.Component {
         }
     }
 
-    renderLoginForm = () => {
-        const { fieldUsername, fieldPassword } = this.state;
+    renderRegisterForm = () => {
+        const {
+            fieldName,
+            fieldUsername,
+            fieldEmail,
+            fieldPassword,
+        } = this.state;
 
         return (
             <Grid style={{marginTop: 20, marginBottom: 20}} container spacing={3}>
                 <Grid item xs={12}>
                     <Typography variant={"h2"}>
                         <Box fontWeight="fontWeightMedium">
-                            LOGIN
+                            CADASTRAR
                         </Box>
                     </Typography>
                 </Grid>
@@ -52,10 +68,30 @@ class LoginPage extends React.Component {
                     <TextField
                         autoFocus
                         margin="dense"
+                        id="fieldName"
+                        label="Nome"
+                        fullWidth
+                        value={ fieldName }
+                        onChange={this.onChangeModalField}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        margin="dense"
                         id="fieldUsername"
                         label="Usuário"
                         fullWidth
                         value={ fieldUsername }
+                        onChange={this.onChangeModalField}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        margin="dense"
+                        id="fieldEmail"
+                        label="E-mail"
+                        fullWidth
+                        value={ fieldEmail }
                         onChange={this.onChangeModalField}
                     />
                 </Grid>
@@ -71,7 +107,7 @@ class LoginPage extends React.Component {
                     />
                 </Grid>
                 <Grid item xs={12}>
-                    <Button onClick={this.submitLogin}>Entrar</Button>
+                    <Button onClick={this.submitRegisterForm}>Cadastrar</Button>
                 </Grid>
             </Grid>
         )
@@ -80,10 +116,10 @@ class LoginPage extends React.Component {
     render() {
         return (
             <Container>
-                { this.renderLoginForm() }
+                { this.renderRegisterForm() }
             </Container>
         );
     }
 }
 
-export default withRouter(LoginPage);
+export default withRouter(RegisterModeratorPage);

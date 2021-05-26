@@ -3,6 +3,7 @@ import {Link, withRouter} from "react-router-dom";
 import {Typography, AppBar, Toolbar, IconButton, Button, Menu, MenuItem} from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import StorageUtils from "../utils/storage.utils";
+import RolesUtils from "../utils/roles.utils";
 
 class MainMenu extends React.Component {
     constructor(props) {
@@ -18,6 +19,10 @@ class MainMenu extends React.Component {
         return !!userData;
     }
 
+    isAdmin = () => {
+        return RolesUtils.hasAdminRole();
+    }
+
     handleClick = (event) => {
         this.setState({ anchorEl: event.currentTarget });
     };
@@ -30,6 +35,27 @@ class MainMenu extends React.Component {
         StorageUtils.removeUserData();
         StorageUtils.removeAccessToken();
         window.location = "/login";
+    }
+
+    renderUserMenu = () => {
+
+        return (
+            <>
+                <MenuItem component={Link} to="/home">Home</MenuItem>
+                <MenuItem component={Link} to="/contexts">Cursos</MenuItem>
+            </>
+        )
+    }
+
+    renderAdminMenu = () => {
+
+        return (
+            <>
+                <MenuItem component={Link} to="/home">Home</MenuItem>
+                <MenuItem component={Link} to="/contexts">Cursos</MenuItem>
+                <MenuItem component={Link} to="/register-moderator">Novo Moderador</MenuItem>
+            </>
+        )
     }
 
     render() {
@@ -56,8 +82,11 @@ class MainMenu extends React.Component {
                                         open={Boolean(anchorEl)}
                                         onClose={this.handleClose}
                                     >
-                                        <MenuItem component={Link} to="/home">Home</MenuItem>
-                                        <MenuItem component={Link} to="/contexts">Cursos</MenuItem>
+                                        {
+                                            this.isAdmin()
+                                                ? this.renderAdminMenu()
+                                                : this.renderUserMenu()
+                                        }
                                     </Menu>
                                     <Button onClick={this.logout}>Sair</Button>
                                 </>

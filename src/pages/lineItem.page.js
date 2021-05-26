@@ -18,6 +18,7 @@ import {
 import { DataGrid } from "@material-ui/data-grid";
 import { Visibility, Edit, AddBox } from "@material-ui/icons";
 import TabPanel from "../components/tabpanel.component";
+import Alert from "../components/alert.component";
 import ContextService from "../services/context.service";
 import LineItemsService from "../services/lineItems.service";
 import AnswersService from "../services/answers.service";
@@ -43,6 +44,12 @@ class LineItemPage extends React.Component {
             addAnswerModal: false,
             addAnswerModalInputFile: '',
             deleteLineItemModal: false,
+            alertProps: {
+                open: false,
+                msg: '',
+                onClose: this.onCloseAlert,
+                severity: 'success'
+            }
         }
     }
 
@@ -56,6 +63,22 @@ class LineItemPage extends React.Component {
         const contextId = StorageUtils.getCurrentContextId();
         const context = await ContextService.getById(contextId);
         this.setState({ lineItem, context });
+    }
+
+    openAlert = (msg, severity) => {
+        const { alertProps } = this.state;
+        const tempAlertProps = Object.assign({}, alertProps);
+        tempAlertProps.msg = msg;
+        tempAlertProps.severity = severity;
+        tempAlertProps.open = true;
+        this.setState({ alertProps: tempAlertProps });
+    }
+
+    onCloseAlert = () => {
+        const { alertProps } = this.state;
+        const tempAlertProps = Object.assign({}, alertProps);
+        tempAlertProps.open = false;
+        this.setState({ alertProps: tempAlertProps });
     }
 
     isContextInstructor = () => {
@@ -232,7 +255,7 @@ class LineItemPage extends React.Component {
         const answerMsg = await AnswersService.update(data);
         this.toggleModalEditAnswer(selectedAnswer);
         this.loadLineItemData();
-        alert(answerMsg);
+        this.openAlert(answerMsg, 'success');
     }
 
     renderModalEditAnswer = () => {
@@ -305,7 +328,7 @@ class LineItemPage extends React.Component {
         const answerMsg = await AnswersService.insert(data);
         this.toggleModalAddAnswer();
         this.loadLineItemData();
-        alert(answerMsg);
+        this.openAlert(answerMsg, 'success');
     }
 
     renderModalAddAnswer = () => {
@@ -359,7 +382,7 @@ class LineItemPage extends React.Component {
         const lineItemMsg = await LineItemsService.deleteById(id);
         this.toggleModalDeleteLineItem();
         this.loadContextData();
-        alert(lineItemMsg);
+        this.openAlert(lineItemMsg, 'success');
     }
 
     renderModalDeleteLineItem = () => {
@@ -408,7 +431,7 @@ class LineItemPage extends React.Component {
     }
 
     render() {
-        const { lineItem } = this.state;
+        const { lineItem, alertProps } = this.state;
 
         if (!lineItem) return null;
 
@@ -422,6 +445,8 @@ class LineItemPage extends React.Component {
                 { this.renderModalAddAnswer() }
                 { this.renderModalEditAnswer() }
                 { this.renderModalDeleteLineItem() }
+
+                <Alert { ...alertProps } />
             </Container>
         );
     }

@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core";
 import { Visibility, Edit, AddBox, Delete } from '@material-ui/icons';
 import { Link } from "react-router-dom";
+import Alert from "../components/alert.component";
 import ContextService from "../services/context.service";
 import RolesUtils from "../utils/roles.utils";
 
@@ -29,6 +30,12 @@ class ContextsPage extends React.Component {
             editContextModal: false,
             editContextModalInputName: '',
             deleteContextModal: false,
+            alertProps: {
+                open: false,
+                msg: '',
+                onClose: this.onCloseAlert,
+                severity: 'success'
+            }
         }
     }
 
@@ -44,6 +51,22 @@ class ContextsPage extends React.Component {
     onChangeModalField = (event) => {
         const { target: { id, value } } = event;
         this.setState({[id]: value});
+    }
+
+    openAlert = (msg, severity) => {
+        const { alertProps } = this.state;
+        const tempAlertProps = Object.assign({}, alertProps);
+        tempAlertProps.msg = msg;
+        tempAlertProps.severity = severity;
+        tempAlertProps.open = true;
+        this.setState({ alertProps: tempAlertProps });
+    }
+
+    onCloseAlert = () => {
+        const { alertProps } = this.state;
+        const tempAlertProps = Object.assign({}, alertProps);
+        tempAlertProps.open = false;
+        this.setState({ alertProps: tempAlertProps });
     }
 
     toggleModalAddContext = () => {
@@ -74,7 +97,7 @@ class ContextsPage extends React.Component {
         const contextMsg = await ContextService.insert(data);
         this.toggleModalAddContext();
         this.loadContextsList();
-        alert(contextMsg);
+        this.openAlert(contextMsg, 'success');
     }
 
     renderModalAddContext = () => {
@@ -141,7 +164,7 @@ class ContextsPage extends React.Component {
         const contextMsg = await ContextService.update(data);
         this.toggleModalEditContext();
         this.loadContextsList();
-        alert(contextMsg);
+        this.openAlert(contextMsg, 'success');
     }
 
     renderModalEditContext = () => {
@@ -196,7 +219,7 @@ class ContextsPage extends React.Component {
         const contextMsg = await ContextService.deleteById(id);
         this.toggleModalDeleteContext();
         this.loadContextsList();
-        alert(contextMsg);
+        this.openAlert(contextMsg, 'success');
     }
 
     renderModalDeleteContext = () => {
@@ -224,7 +247,7 @@ class ContextsPage extends React.Component {
     }
 
     render() {
-        const { rows, isModerator } = this.state;
+        const { rows, isModerator, alertProps } = this.state;
 
         const columns = [
             { field: 'name', headerName: 'Nome', width: 230 },
@@ -268,6 +291,7 @@ class ContextsPage extends React.Component {
                 { this.renderModalAddContext() }
                 { this.renderModalEditContext() }
                 { this.renderModalDeleteContext() }
+                <Alert { ...alertProps } />
             </Container>
         );
     }

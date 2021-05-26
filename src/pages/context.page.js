@@ -22,6 +22,7 @@ import { Visibility, Edit, AddBox, Delete } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import { Line } from 'react-chartjs-2';
 import TabPanel from "../components/tabpanel.component";
+import Alert from "../components/alert.component";
 import ContextService from "../services/context.service";
 import LineItemsService from "../services/lineItems.service";
 import RolesUtils from "../utils/roles.utils";
@@ -48,6 +49,12 @@ class ContextPage extends React.Component {
             addLineItemModalInputDescription: '',
             deleteLineItemModal: false,
             selectGradeHistoryInputUser: '',
+            alertProps: {
+                open: false,
+                msg: '',
+                onClose: this.onCloseAlert,
+                severity: 'success'
+            }
         }
     }
 
@@ -60,6 +67,22 @@ class ContextPage extends React.Component {
         const context = await ContextService.getById(id);
         StorageUtils.setCurrentContextId(id);
         this.setState({ context });
+    }
+
+    openAlert = (msg, severity) => {
+        const { alertProps } = this.state;
+        const tempAlertProps = Object.assign({}, alertProps);
+        tempAlertProps.msg = msg;
+        tempAlertProps.severity = severity;
+        tempAlertProps.open = true;
+        this.setState({ alertProps: tempAlertProps });
+    }
+
+    onCloseAlert = () => {
+        const { alertProps } = this.state;
+        const tempAlertProps = Object.assign({}, alertProps);
+        tempAlertProps.open = false;
+        this.setState({ alertProps: tempAlertProps });
     }
 
     isContextInstructor = () => {
@@ -304,7 +327,7 @@ class ContextPage extends React.Component {
         const lineItemMsg = await LineItemsService.update(data);
         this.toggleModalEditLineItem(selectedLineItem);
         this.loadContextData();
-        alert(lineItemMsg);
+        this.openAlert(lineItemMsg, 'success');
     }
 
     renderModalEditLineItem = () => {
@@ -378,7 +401,7 @@ class ContextPage extends React.Component {
         const lineItemMsg = await LineItemsService.insert(data);
         this.toggleModalAddLineItem();
         this.loadContextData();
-        alert(lineItemMsg);
+        this.openAlert(lineItemMsg, 'success');
     }
 
     renderModalAddLineItem = () => {
@@ -440,7 +463,7 @@ class ContextPage extends React.Component {
         const lineItemMsg = await LineItemsService.deleteById(id);
         this.toggleModalDeleteLineItem();
         this.loadContextData();
-        alert(lineItemMsg);
+        this.openAlert(lineItemMsg, 'success');
     }
 
     renderModalDeleteLineItem = () => {
@@ -509,10 +532,10 @@ class ContextPage extends React.Component {
 
         if (hasInstructorPermission) {
             const userMsg = await ContextService.updateInstructorUsers(data);
-            alert(userMsg);
+            this.openAlert(userMsg, 'success');
         } else {
             const userMsg = await ContextService.updateUsers(data);
-            alert(userMsg);
+            this.openAlert(userMsg, 'success');
         }
         this.loadContextData();
     }
@@ -544,7 +567,7 @@ class ContextPage extends React.Component {
     }
 
     render() {
-        const { context } = this.state;
+        const { context, alertProps } = this.state;
 
         if (!context) return null;
 
@@ -559,6 +582,8 @@ class ContextPage extends React.Component {
                 { this.renderModalAddLineItem() }
                 { this.renderModalEditLineItem() }
                 { this.renderModalDeleteLineItem() }
+
+                <Alert { ...alertProps } />
             </Container>
         );
     }
