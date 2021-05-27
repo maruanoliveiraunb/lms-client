@@ -1,7 +1,7 @@
-const API_PATH = process.env.API_PATH || 'http://localhost:3002';
+const API_PATH = process.env.REACT_APP_API_PATH || 'http://localhost:3002';
 
 export default {
     api: {
-        server: 'https://lms-server-ia.herokuapp.com'
+        server: API_PATH
     }
 }
